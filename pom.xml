@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hereBeDragons.spring</groupId>
+    <artifactId>scheduler-root</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.build.timestamp.format>yyyMMddHHmm</maven.build.timestamp.format>
+        <version.build>${user.name}-${maven.build.timestamp}-${java.version}-${os.name}</version.build>
+        <!-- Trick to allows access from submodules -->
+        <main.basedir>${project.basedir}</main.basedir>
+        <spring.version>4.3.12.RELEASE</spring.version>
+        <logger.version>2.11.1</logger.version>
+    </properties>
+
+    <repositories>
+        <!-- Libs not available in public Maven repositories must be installed
+        in local maven repository -->
+        <!-- indexing can be performed as described in https://stackoverflow.com/questions/5349261/how-to-index-a-maven-repo-without-nexus-artifactory-etc/12691962#1269 -->
+        <!-- path variables based on http://workshop.alea.net/post/2016/11/maven-memo-local-jar/  -->
+        <repository>
+            <id>projectTemplate</id>
+            <name>Local repository in project tree</name>
+            <url>file://${main.basedir}/repo</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--<dependency>-->
+                <!--<groupId>io.spring.platform</groupId>-->
+                <!--<artifactId>platform-bom</artifactId>-->
+                <!--<version>Brussels-SR5</version>-->
+                <!--<type>pom</type>-->
+                <!--<scope>import</scope>-->
+            <!--</dependency>-->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${logger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-jcl</artifactId>
+                <version>${logger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${logger.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <modules>
+        <module>template</module>
+    </modules>
+
+    <build>
+        <plugins>
+                <!-- Compiler configuration. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.1</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <showWarnings>true</showWarnings>
+                        <compilerArgument>-Xlint</compilerArgument>
+                        <compilerArgument>-Xlint:-serial</compilerArgument>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+
+                <!-- unit tests configuration -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20</version>
+                    <configuration>
+                        <!-- Show exception stack traces of tests in stdout. -->
+                        <useFile>false</useFile>
+                        <skipTests>false</skipTests>
+                        <forkMode>once</forkMode>
+                        <trimStackTrace>false</trimStackTrace>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                    </configuration>
+                </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>http://localhost:8080/manager/text</url>
+                    <server>localserver</server>
+                    <username>tomcat</username>
+                    <password>tomcat</password>
+                    <path>/${project.artifactId}</path>
+                    <update>true</update>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <description>Spring based Task Scheduler
+        The actual web deployable project is the module
+    </description>
+    <name>Scheduler</name>
+</project>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/web-pub">
+    <!--<Resource name="jdbc/sedr_rw"-->
+              <!--auth="Container" type="javax.sql.DataSource"-->
+              <!--factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"-->
+              <!--maxTotal="10" maxIdle="0" maxWaitMillis="10000"-->
+              <!--username="sedr_rw" password="sedr_rw"-->
+              <!--driverClassName="oracle.jdbc.OracleDriver"-->
+              <!--url="jdbc:oracle:thin:@//localhost:1522/pdb1.localdomain"/>-->
+<!--</Context>-->
