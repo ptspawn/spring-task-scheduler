@@ -10,9 +10,19 @@
     <mvc:annotation-driven/>
 
     <context:component-scan base-package="com.hereBeDragons.spring.scheduler.controllers" />
-    <context:component-scan base-package="com.hereBeDragons.spring.scheduler.scheduler" />
+    <context:component-scan base-package="com.hereBeDragons.spring.scheduler.mockobjects" />
 
     <context:property-placeholder location="classpath:scheduler.properties" />
+
+    <bean id="myTask1" class="com.hereBeDragons.spring.scheduler.scheduler.MyTaskImplEven" >
+        <constructor-arg index="0" value="Database Operation 1" />
+        <constructor-arg index="1" value="0/10 * * * * ?" />
+    </bean>
+
+    <bean id="myTaskScheduler" class="com.hereBeDragons.spring.scheduler.scheduler.MyTaskScheduler" >
+        <constructor-arg index = "0" value = "10" />
+        <constructor-arg index = "1" ref="myTask1" />
+    </bean>
 
     <context:mbean-export />
 
