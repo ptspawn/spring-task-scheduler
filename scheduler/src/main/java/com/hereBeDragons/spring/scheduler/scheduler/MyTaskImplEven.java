@@ -2,13 +2,8 @@ package com.hereBeDragons.spring.scheduler.scheduler;
 
 import com.hereBeDragons.spring.scheduler.mockobjects.MockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,22 +26,11 @@ public class MyTaskImplEven extends AbstractMyTask {
 	}
 
 	@Override
-	public void scheduleTask(TaskScheduler taskScheduler) {
-		scheduling = taskScheduler.schedule(new Runnable() {
-			@Override
-			public void run() {
-				logger.info("Running scheduled task " + getName());
-				databaseObjects.clear();
-				databaseObjects.addAll(findAllPendingObjects());
-				System.out.println("Abstrack Sedr Task was invoked "+ ++taskCounter + " times. Please @Override it to actually do something");
-				// Actually do stuff;
-			}
-		}, new Trigger() {
-			@Override
-			public Date nextExecutionTime(TriggerContext triggerContext) {
-				return new CronTrigger(cronExpression).nextExecutionTime(triggerContext);
-			}
-		});
+	public void executeTask() {
+		logger.info("Running scheduled task " + getName());
+		databaseObjects.clear();
+		databaseObjects.addAll(findAllPendingObjects());
+		logger.info("Odd/Even Task was invoked " + ++taskCounter + " times.");
 	}
 
 	private List<Integer> findAllPendingObjects() {
@@ -64,10 +48,5 @@ public class MyTaskImplEven extends AbstractMyTask {
 				}
 			});
 		});
-	}
-
-	@Override
-	public String toString() {
-		return super.toString();
 	}
 }

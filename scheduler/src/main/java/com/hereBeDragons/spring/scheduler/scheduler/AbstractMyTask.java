@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Pattern;
 
-public class AbstractMyTask implements MyTask{
+public abstract class AbstractMyTask implements MyTask{
 
 	protected Logger logger = LoggerFactory.getLogger(MyTask.class);
 	// Pattern courtesy of https://github.com/quartznet/quartznet/blob/master/src/Quartz/Xml/job_scheduling_data_2_0.xsd
@@ -27,10 +27,24 @@ public class AbstractMyTask implements MyTask{
 
 	protected static int taskCounter;
 
+    /**
+     * Constructor
+     * @param name a unique {@link String} that identifies the task
+     * @throws IllegalArgumentException if the {@param name} is null or empty
+     */
 	public AbstractMyTask(String name) {
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Name can't be null");
 		this.name = name;
 	}
 
+    /**
+     * Constructor
+     * @param name a unique {@link String} that identifies the task
+     * @param cronExpression a valid cron expression
+     * @see AbstractMyTask#reSchedule(String)
+     * @throws IllegalArgumentException if the {@param name} or {@param cronExpression} are null or empty
+     */
 	public AbstractMyTask(String name, String cronExpression) {
 		if (name == null || name.isEmpty())
 			throw new IllegalArgumentException("Name can't be null");
@@ -40,6 +54,12 @@ public class AbstractMyTask implements MyTask{
 		this.name = name;
 	}
 
+    /**
+     * Method where the actual work is performed.
+     * Meant to be @Overridden
+     */
+	public abstract void executeTask();
+
 	/**
 	 * Adds the current task to the provided {@link TaskScheduler}
 	 * The actual task to run should be inside the run() method
@@ -47,12 +67,11 @@ public class AbstractMyTask implements MyTask{
 	 * @param taskScheduler {@link TaskScheduler}
 	 */
 	@Override
-	public void scheduleTask(TaskScheduler taskScheduler) {
+	public final void scheduleTask(TaskScheduler taskScheduler) {
 		scheduling = taskScheduler.schedule(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Abstrack Sedr Task was invoked "+ ++taskCounter + " times. Please @Override it to actually do something");
-				// Actually do stuff;
+			    executeTask();
 			}
 		}, new Trigger() {
 			@Override
@@ -62,13 +81,43 @@ public class AbstractMyTask implements MyTask{
 		});
 	}
 
+    /**
+     * Returns the {@link ScheduledFuture} object
+     * that is scheduler for execution
+     * @return {@link ScheduledFuture}
+     */
 	@Override
 	public final ScheduledFuture<?> getScheduling() {
 		return scheduling;
 	}
 
+    /**
+     * Method that provides the capability of rescheduling the task.
+     *
+     * If the provided {@param schedule} is not a valid cron expression,<br>the schedule will remain the same
+     *
+     * The new schedule will only be executed after the task triggers
+     * To force an immediate rescheduling is the responsability of the {@link MyTaskScheduler#refreshCronSchedule()}
+     *
+     *
+     * @param schedule A valid cron expression
+     *
+     *  ┌───────────── minute (0 - 59)
+     *  │ ┌───────────── hour (0 - 23)
+     *  │ │ ┌───────────── day of the month (1 - 31)
+     *  │ │ │ ┌───────────── month (1 - 12)
+     *  │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday;
+     *  │ │ │ │ │                                   7 is also Sunday on some systems)
+     *  │ │ │ │ │
+     *  │ │ │ │ │
+     * "* * * * * ?"
+     *
+     *  <B>The '?' is mandatory</B>
+     * For a more detailed explanation:
+     * @see <a href="https://www.baeldung.com/cron-expressions">Advanced Cron Expression</a>
+     */
 	@Override
-	public void reSchedule(String schedule) {
+	public final void reSchedule(String schedule) {
 		if (!cronPattern.matcher(schedule).matches()) {
 			logger.warn("The provided cronExpression was invalid");
 			return;

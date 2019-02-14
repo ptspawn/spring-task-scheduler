@@ -14,14 +14,14 @@
 
     <context:property-placeholder location="classpath:scheduler.properties" />
 
-    <bean id="myTask1" class="com.hereBeDragons.spring.scheduler.scheduler.MyTaskImplEven" >
+    <bean id="EvenTask" class="com.hereBeDragons.spring.scheduler.scheduler.MyTaskImplEven" >
         <constructor-arg index="0" value="Database Operation 1" />
-        <constructor-arg index="1" value="0/10 * * * * ?" />
+        <constructor-arg index="1" value="0/5 * * * * ?" />
     </bean>
 
     <bean id="myTaskScheduler" class="com.hereBeDragons.spring.scheduler.scheduler.MyTaskScheduler" >
         <constructor-arg index = "0" value = "10" />
-        <constructor-arg index = "1" ref="myTask1" />
+        <constructor-arg index = "1" ref="EvenTask" />
     </bean>
 
     <context:mbean-export />
