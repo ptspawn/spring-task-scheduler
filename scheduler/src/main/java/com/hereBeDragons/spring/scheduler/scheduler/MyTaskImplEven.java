@@ -30,7 +30,7 @@ public class MyTaskImplEven extends AbstractMyTask {
 		logger.info("Running scheduled task " + getName());
 		databaseObjects.clear();
 		databaseObjects.addAll(findAllPendingObjects());
-		logger.info("Odd/Even Task was invoked " + ++taskCounter + " times.");
+		logger.info("Execute was invoked " + ++taskCounter + " times.");
 	}
 
 	private List<Integer> findAllPendingObjects() {

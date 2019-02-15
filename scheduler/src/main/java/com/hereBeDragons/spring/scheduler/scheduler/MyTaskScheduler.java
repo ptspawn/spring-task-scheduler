@@ -9,9 +9,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * MultiThreaded Spring Based Task Scheduler
+ */
 @EnableScheduling
 public class MyTaskScheduler implements SchedulingConfigurer {
 
@@ -135,6 +140,13 @@ public class MyTaskScheduler implements SchedulingConfigurer {
                 logger.info(taskToSchedule.remove(taskToRemove) ? "Task " + taskToRemove.getName() + " has been removed."
                     : "Task " + taskToRemove.getName() + " was not in the scheduler.");
 	}
+
+    /**
+     * @return A list with all the scheduled tasks
+     */
+	public List<MyTask> listScheduledTasks(){
+	    return new ArrayList<>(taskToSchedule);
+    }
 
     /**
      * Method to reset the Scheduler.
